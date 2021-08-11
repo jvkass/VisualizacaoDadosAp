@@ -12,7 +12,7 @@ let ids;
 let category = "Happiness_Score";
 let year = 2021;
 
-var projection = d3.geoMercator().center([0, 30]);
+var projection = d3.geoMercator();
 
 let path = d3.geoPath().projection(projection);
 
@@ -125,34 +125,32 @@ function ready([local_us, local_happiness_data, local_ids]) {
         .style("cursor", "pointer")
         .attr("stroke-width", 2)
         .attr("stroke", "#f55d5d");
+
+      console.log(d3.event.pageX);
+        
+      const rect = this.getBoundingClientRect();
+
+      let country = getCountryDataByYear(
+        nameById.get(d.id),
+        year,
+        happiness_data
+      );
+
+      if(country){
+        showTooltip(country.Country, country[category], category, d3.event.pageX, d3.event.pageY);
+      }
+      else{
+        showTooltip('Dados não disponíveis', null, null, rect.x, rect.y);
+      }
+        
     })
     .on("mouseout", function (d) {
       d3.select(this)
         .style("cursor", "default")
         .attr("stroke-width", 0)
         .attr("stroke", "none");
+      hideTooltip();
     })
-
-    .append("title")
-    .text((d) => {
-      let country = getCountryDataByYear(
-        nameById.get(d.id),
-        year,
-        happiness_data
-      );
-      console.log(country);
-      if (country) {
-        return (
-          "País: " +
-          country.Country +
-          "\n" +
-          category +
-          ": " +
-          country[category]
-        );
-      }
-      return "Dados indisponíveis";
-    });
 
   svg
     .append("path")
@@ -169,11 +167,22 @@ function hideTooltip() {
   d3.select("#tooltip").classed("hidden", true);
 }
 
-function showTooltip(county_id, x, y) {
+function showTooltip(country_name, country_value, cat, x, y) {
   const offset = 10;
   const t = d3.select("#tooltip");
-  t.select("#taxa").text(rateById.get(county_id));
-  t.select("#countyname").text(nameById.get(county_id));
+
+
+  t.select("#country_name").text(country_name);
+  if(country_name != 'Dados não disponíveis'){
+    t.select("#country_cat").text(cat + ":");
+    t.select("#country_value").text(country_value);
+  }
+  else{
+    t.select("#country_cat").text("");
+    t.select("#country_value").text("");
+  }
+
+
   t.classed("hidden", false);
   const rect = t.node().getBoundingClientRect();
   const w = rect.width;
@@ -181,5 +190,5 @@ function showTooltip(county_id, x, y) {
   if (x + offset + w > width) {
     x = x - w;
   }
-  t.style("left", x + offset + "px").style("top", y - h + "px");
+  t.style("left", x + "px").style("top", y+h/2 + "px");
 }
