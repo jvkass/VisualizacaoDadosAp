@@ -9,6 +9,8 @@ let us;
 let happiness_data;
 let ids;
 
+let selectedCountry;
+
 let category = "Happiness_Score";
 let year = 2021;
 
@@ -125,8 +127,6 @@ function ready([local_us, local_happiness_data, local_ids]) {
         .style("cursor", "pointer")
         .attr("stroke-width", 2)
         .attr("stroke", "#f55d5d");
-
-      console.log(d3.event.pageX);
         
       const rect = this.getBoundingClientRect();
 
@@ -150,6 +150,24 @@ function ready([local_us, local_happiness_data, local_ids]) {
         .attr("stroke-width", 0)
         .attr("stroke", "none");
       hideTooltip();
+    })
+    .on('click', function(d) {
+      let country = getCountryDataByYear(
+        nameById.get(d.id),
+        year,
+        happiness_data
+      );
+
+      d3.select(".selected_country").classed("selected_country", false);
+      if(country && selectedCountry && selectedCountry.Name === country.Name){
+        selectedCountry = null;  
+      }
+      else{
+        d3.select(this).classed("selected_country", true);
+        selectedCountry = country;
+      }
+      
+      updateSelectedCountry();
     })
 
   svg
@@ -191,4 +209,16 @@ function showTooltip(country_name, country_value, cat, x, y) {
     x = x - w;
   }
   t.style("left", x + "px").style("top", y+h/2 + "px");
+}
+
+
+
+function updateSelectedCountry(){
+  if(selectedCountry){
+    document.getElementById("selected_country_div").className = '';
+    document.getElementById("selected_country").innerText = selectedCountry.Country;
+  }
+  else{
+    document.getElementById("selected_country_div").className = 'hidden';
+  }
 }

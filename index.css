@@ -31,3 +31,13 @@
   font-size: 16px;
   line-height: 20px;
 }
+
+
+.hidden{
+  display: none;
+}
+
+.selected_country{
+  stroke-width: 5;
+  stroke:  #FF0000;
+}
