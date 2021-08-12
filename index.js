@@ -18,6 +18,12 @@ var projection = d3.geoMercator();
 
 let path = d3.geoPath().projection(projection);
 
+
+let happiness_facts;
+let yearHDim;
+let avgByYearGroup;
+let xScaleH;
+
 const svg = d3
   .select("#map")
   .append("svg")
@@ -39,6 +45,7 @@ let promises = [
   ),
 ];
 
+// Obtendo todos os dados
 Promise.all(promises).then(ready);
 
 document.getElementById("years").addEventListener("change", () => {
@@ -76,7 +83,55 @@ function ready([local_us, local_happiness_data, local_ids]) {
     });
     ids = local_ids;
   }
+  happiness_facts = crossfilter(happiness_data);
+  yearHDim = happiness_facts.dimension((d) => d.Year);
 
+  avgByYearGroup = yearHDim.group().reduce(
+    function (p, v) {
+      if (selectedCountry && v.Country != selectedCountry.Country) {
+        return p;
+      }
+      ++p.count;
+      p.total += v.Happiness_Score;
+      if (p.count == 0) {
+        p.average = 0;
+      } else {
+        p.average = p.total / p.count;
+      }
+      return p;
+    },
+    // remove
+    function (p, v) {
+      if (selectedCountry && v.Country != selectedCountry.Country) {
+        return p;
+      }
+      --p.count;
+      p.total -= v.Happiness_Score;
+      if (p.count == 0) {
+        p.average = 0;
+      } else {
+        p.average = p.total / p.count;
+      }
+      return p;
+    },
+    // initial
+    function () {
+      return {
+        count: 0,
+        total: 0,
+        average: 0,
+      };
+    }
+  );
+
+  xScaleH = d3.scaleLinear()
+        .domain([yearHDim.bottom(1)[0].Year - 0.5, yearHDim.top(1)[0].Year + 0.5]);
+
+  loadLine();
+  loadMap();
+}
+
+function loadMap() {
   let ranges = {
     Happiness_Score: d3.extent(happiness_data, (d) => d.Happiness_Score),
     GDP_Per_Capita: d3.extent(happiness_data, (d) => d.GDP_Per_Capita),
@@ -127,7 +182,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
         .style("cursor", "pointer")
         .attr("stroke-width", 2)
         .attr("stroke", "#f55d5d");
-        
+
       const rect = this.getBoundingClientRect();
 
       let country = getCountryDataByYear(
@@ -136,13 +191,17 @@ function ready([local_us, local_happiness_data, local_ids]) {
         happiness_data
       );
 
-      if(country){
-        showTooltip(country.Country, country[category], category, d3.event.pageX, d3.event.pageY);
+      if (country) {
+        showTooltip(
+          country.Country,
+          country[category],
+          category,
+          d3.event.pageX,
+          d3.event.pageY
+        );
+      } else {
+        showTooltip("Dados não disponíveis", null, null, rect.x, rect.y);
       }
-      else{
-        showTooltip('Dados não disponíveis', null, null, rect.x, rect.y);
-      }
-        
     })
     .on("mouseout", function (d) {
       d3.select(this)
@@ -151,24 +210,25 @@ function ready([local_us, local_happiness_data, local_ids]) {
         .attr("stroke", "none");
       hideTooltip();
     })
-    .on('click', function(d) {
+    .on("click", function (d) {
       let country = getCountryDataByYear(
         nameById.get(d.id),
         year,
         happiness_data
       );
 
+
       d3.select(".selected_country").classed("selected_country", false);
-      if(country && selectedCountry && selectedCountry.Name === country.Name){
-        selectedCountry = null;  
-      }
-      else{
+      if (country && selectedCountry && selectedCountry.Name === country.Name) {
+        selectedCountry = null;
+      } else {
         d3.select(this).classed("selected_country", true);
         selectedCountry = country;
       }
       
+
       updateSelectedCountry();
-    })
+    });
 
   svg
     .append("path")
@@ -189,17 +249,14 @@ function showTooltip(country_name, country_value, cat, x, y) {
   const offset = 10;
   const t = d3.select("#tooltip");
 
-
   t.select("#country_name").text(country_name);
-  if(country_name != 'Dados não disponíveis'){
+  if (country_name != "Dados não disponíveis") {
     t.select("#country_cat").text(cat + ":");
     t.select("#country_value").text(country_value);
-  }
-  else{
+  } else {
     t.select("#country_cat").text("");
     t.select("#country_value").text("");
   }
-
 
   t.classed("hidden", false);
   const rect = t.node().getBoundingClientRect();
@@ -208,17 +265,55 @@ function showTooltip(country_name, country_value, cat, x, y) {
   if (x + offset + w > width) {
     x = x - w;
   }
-  t.style("left", x + "px").style("top", y+h/2 + "px");
+  t.style("left", x + "px").style("top", y + h / 2 + "px");
 }
 
-
-
-function updateSelectedCountry(){
-  if(selectedCountry){
-    document.getElementById("selected_country_div").className = '';
+function updateSelectedCountry() {
+  if (selectedCountry) {
+    document.getElementById("selected_country_div").className = "";
     document.getElementById("selected_country").innerText = selectedCountry.Country;
+    document.getElementById("line_chart_title").innerText =  "Média de felicidade do País: " + selectedCountry.Country;
+  } else {
+    document.getElementById("selected_country_div").className = "hidden";
+    document.getElementById("line_chart_title").innerText =  "Média de felicidade Mundial";
   }
-  else{
-    document.getElementById("selected_country_div").className = 'hidden';
-  }
+  
+  ready([]);
+}
+
+function loadLine() {  
+  let lineChart = dc.lineChart("#line_chart");
+  lineChart
+    .width(width)
+    .height(500)
+    .dimension(yearHDim)
+    .margins({ top: 30, right: 50, bottom: 25, left: 40 })
+    .renderArea(false)
+    .x(xScaleH)
+    .renderHorizontalGridLines(true)
+    .legend(
+      dc
+        .legend()
+        .x(width - 200)
+        .y(10)
+        .itemHeight(13)
+        .gap(5)
+    )
+    .group(avgByYearGroup, "Happiness_Score médio")
+    .renderLabel(true)
+    .brushOn(false)
+    .yAxisLabel("Média de Happiness Score")
+    .xAxisLabel("Anos")
+    .ordinalColors(["darkorange"])
+    .valueAccessor(function (d) {
+      return d.value.average;
+    })
+    .y(d3.scaleLinear().domain([0, 10]))
+    .renderDataPoints({ radius: 5, fillOpacity: 0.8, strokeOpacity: 0.0 })
+    .xAxis()
+    .tickFormat((d) => (d % 1 ? null : d))
+    ;
+
+
+    dc.renderAll()
 }

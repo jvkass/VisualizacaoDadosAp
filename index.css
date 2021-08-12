@@ -38,6 +38,14 @@
 }
 
 .selected_country{
-  stroke-width: 5;
+  stroke-width: 3;
   stroke:  #FF0000;
+}
+
+.stack-list{
+  fill: none;
+}
+
+.lineLabel{
+  fill: black;
 }
