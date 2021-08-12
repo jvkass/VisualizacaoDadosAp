@@ -10,6 +10,15 @@ let happiness_data;
 let ids;
 
 let selectedCountry;
+let selectedCountryYears = {
+  2015: {},
+  2016: {},
+  2017: {},
+  2018: {},
+  2019: {},
+  2020: {},
+  2021: {}
+}
 
 let category = "Happiness_Score";
 let year = 2021;
@@ -23,6 +32,22 @@ let happiness_facts;
 let yearHDim;
 let avgByYearGroup;
 let xScaleH;
+let xFinalScale;
+let varFreedom;
+let varGdp;
+let varGenerosity;
+let varGovernmentTrust; 
+let varLifeExpectancy;
+let varSocialSupport;
+
+let lineChart;
+
+let barChart1;
+let barChart2;
+let barChart3;
+let barChart4;
+let barChart5;
+let barChart6;
 
 const svg = d3
   .select("#map")
@@ -59,6 +84,12 @@ document.getElementById("cat").addEventListener("change", () => {
 });
 
 function ready([local_us, local_happiness_data, local_ids]) {
+  console.log("INSIDE READY")
+  console.log(selectedCountryYears)
+  console.log("OUTSIDE READY")
+  if(happiness_facts)
+    happiness_facts.remove(() => true);
+
   if (!us) {
     us = local_us;
   }
@@ -83,8 +114,51 @@ function ready([local_us, local_happiness_data, local_ids]) {
     });
     ids = local_ids;
   }
+
+  console.log("1")
   happiness_facts = crossfilter(happiness_data);
   yearHDim = happiness_facts.dimension((d) => d.Year);
+  console.log("2")
+
+
+  varFreedom = yearHDim.group().reduceSum( d  => {
+    return d.Freedom/158;
+    if(!selectedCountry){
+      return d.Freedom/158;
+    }
+    return selectedCountryYears[d.Year].Freedom/158;
+  })
+  varGdp = yearHDim.group().reduceSum( d  => {
+    if(!selectedCountry){
+      return d.GDP_Per_Capita/158;
+    }
+    return selectedCountryYears[d.Year].GDP_Per_Capita/158;
+  })
+  varGenerosity = yearHDim.group().reduceSum( d  => {
+    if(!selectedCountry){
+      return d.Generosity/158;
+    }
+    return selectedCountryYears[d.Year].Generosity/158;
+  })
+  varGovernmentTrust = yearHDim.group().reduceSum( d  => {
+    if(!selectedCountry){
+      return d.Government_Trust/158;
+    }
+    return selectedCountryYears[d.Year].Government_Trust/158;
+  })
+  varLifeExpectancy = yearHDim.group().reduceSum( d  => {
+    if(!selectedCountry){
+      return d.Life_Expectancy/158;
+    }
+    return selectedCountryYears[d.Year].Life_Expectancy/158;
+  })
+  varSocialSupport = yearHDim.group().reduceSum( d  => {
+    if(!selectedCountry){
+      return d.Social_Support/158;
+    }
+    return selectedCountryYears[d.Year].Social_Support/158;
+  })
+  console.log("3")
 
   avgByYearGroup = yearHDim.group().reduce(
     function (p, v) {
@@ -127,8 +201,16 @@ function ready([local_us, local_happiness_data, local_ids]) {
   xScaleH = d3.scaleLinear()
         .domain([yearHDim.bottom(1)[0].Year - 0.5, yearHDim.top(1)[0].Year + 0.5]);
 
-  loadLine();
+  
+  xFinalScale = d3.scaleBand().domain(varFreedom.top(Infinity).sort((a, b) => a.key-b.key).map(d => d.key));
+
+  console.log("4")
   loadMap();
+  console.log("5")
+  loadLine();
+  console.log("6")
+  loadBar();
+  console.log("7")
 }
 
 function loadMap() {
@@ -157,7 +239,9 @@ function loadMap() {
       ranges[category][1] + ranges[category][1] / 10,
     ])
     .range(d3.schemeBlues[9]);
-
+  
+  d3.selectAll("svg > *").remove()
+  
   svg
     .append("g")
     .attr("class", "counties")
@@ -273,6 +357,13 @@ function updateSelectedCountry() {
     document.getElementById("selected_country_div").className = "";
     document.getElementById("selected_country").innerText = selectedCountry.Country;
     document.getElementById("line_chart_title").innerText =  "Média de felicidade do País: " + selectedCountry.Country;
+
+    for(let i = 0; i < happiness_data.length; i++){
+      if(happiness_data[i].Country == selectedCountry.Country){
+        selectedCountryYears[happiness_data[i].Year] = happiness_data[i];
+      }
+    }
+
   } else {
     document.getElementById("selected_country_div").className = "hidden";
     document.getElementById("line_chart_title").innerText =  "Média de felicidade Mundial";
@@ -282,7 +373,11 @@ function updateSelectedCountry() {
 }
 
 function loadLine() {  
-  let lineChart = dc.lineChart("#line_chart");
+  
+  dc.redrawAll();
+  if (lineChart)
+    lineChart.resetSvg();
+  lineChart = dc.lineChart("#line_chart");
   lineChart
     .width(width)
     .height(500)
@@ -311,9 +406,130 @@ function loadLine() {
     .y(d3.scaleLinear().domain([0, 10]))
     .renderDataPoints({ radius: 5, fillOpacity: 0.8, strokeOpacity: 0.0 })
     .xAxis()
-    .tickFormat((d) => (d % 1 ? null : d))
-    ;
+    .tickFormat((d) => (d % 1 ? null : d));
 
 
-    dc.renderAll()
+    //dc.renderAll()
+}
+
+
+function loadBar(){
+
+  if (barChart1)
+    barChart1.resetSvg();
+  barChart1 = dc.barChart("#bar_chart_1")
+  
+  barChart1.width(400)
+           .height(400)
+           .dimension(yearHDim)
+           .gap(1)
+           .margins({top: 30, right: 50, bottom: 25, left: 40})
+           .x(xFinalScale)
+           .y(d3.scaleLinear().domain([0, 2]))
+           .renderHorizontalGridLines(true)
+           .legend(dc.legend().x(200/2))
+           .brushOn(false)
+           .group(varFreedom, 'Média de Freedom')
+           .xUnits(dc.units.ordinal)
+           .yAxisLabel("Pontuação média")
+           .colors('#4E79A7')
+          
+           
+
+  if (barChart2)
+    barChart2.resetSvg();
+  barChart2 = dc.barChart("#bar_chart_2")
+  
+  barChart2.width(400)
+           .height(400)
+           .dimension(yearHDim)
+           .gap(1)
+           .margins({top: 30, right: 50, bottom: 25, left: 40})
+           .x(xFinalScale)
+           .y(d3.scaleLinear().domain([0, 2]))
+           .renderHorizontalGridLines(true)
+           .legend(dc.legend().x(200/2))
+           .brushOn(false)
+           .group(varGdp, 'Média de GDP')
+           .xUnits(dc.units.ordinal)
+           .colors('#F28E2B')
+  
+  if (barChart3)
+    barChart3.resetSvg();
+  barChart3 = dc.barChart("#bar_chart_3")
+  
+  barChart3.width(400)
+          .height(400)
+          .dimension(yearHDim)
+          .gap(1)
+          .margins({top: 30, right: 50, bottom: 25, left: 40})
+          .x(xFinalScale)
+          .y(d3.scaleLinear().domain([0, 2]))
+          .renderHorizontalGridLines(true)
+          .legend(dc.legend().x(200/2))
+          .brushOn(false)
+          .group(varGenerosity, 'Média de Generosidade')
+          .xUnits(dc.units.ordinal)
+          .colors('#E15759')
+
+          
+  
+  if (barChart4)
+    barChart4.resetSvg();
+  barChart4 = dc.barChart("#bar_chart_4")
+
+  barChart4.width(400)
+           .height(400)
+           .dimension(yearHDim)
+           .gap(1)
+           .margins({top: 30, right: 50, bottom: 25, left: 40})
+           .x(xFinalScale)
+           .y(d3.scaleLinear().domain([0, 2]))
+           .renderHorizontalGridLines(true)
+           .legend(dc.legend().x(200/2))
+           .brushOn(false)
+           .group(varGovernmentTrust, 'Média de Confiança no Governo')
+           .xUnits(dc.units.ordinal)
+           .colors('#76B7B2')
+
+    
+  
+  if (barChart5)
+    barChart5.resetSvg();
+  barChart5 = dc.barChart("#bar_chart_5")
+
+  barChart5.width(400)
+           .height(400)
+           .dimension(yearHDim)
+           .gap(1)
+           .margins({top: 30, right: 50, bottom: 25, left: 40})
+           .x(xFinalScale)
+           .y(d3.scaleLinear().domain([0, 2]))
+           .renderHorizontalGridLines(true)
+           .legend(dc.legend().x(200/2))
+           .brushOn(false)
+           .group(varLifeExpectancy, 'Média de Expectativa de Vida')
+           .xUnits(dc.units.ordinal)
+           .colors('#59A14F')
+
+  
+  if(barChart6)
+    barChart6.resetSvg();
+  barChart6 = dc.barChart("#bar_chart_6")  
+
+  barChart6.width(400)
+           .height(400)
+           .dimension(yearHDim)
+           .gap(1)
+           .margins({top: 30, right: 50, bottom: 25, left: 40})
+           .x(xFinalScale)
+           .y(d3.scaleLinear().domain([0, 2]))
+           .renderHorizontalGridLines(true)
+           .legend(dc.legend().x(200/2))
+           .brushOn(false)
+           .group(varSocialSupport, 'Média de Suporte Social')
+           .xUnits(dc.units.ordinal)
+           .colors('#EDC948')
+
+  dc.renderAll()
 }

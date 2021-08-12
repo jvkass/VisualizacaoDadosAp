@@ -49,3 +49,14 @@
 .lineLabel{
   fill: black;
 }
+
+#bar_chart_2 svg g g.axis.y { display: none; }
+
+.bar_charts .grid-line line{
+  stroke:gray;
+}
+
+.grid-container {
+  display: grid-inline;
+  grid-template-columns: auto auto auto;
+}
