@@ -25,7 +25,7 @@ let category = "Happiness_Score";
 let year = 2021;
 let proj = 'Mercator';
 
-var projection = d3.geoTwoPointAzimuthalUsa();
+var projection = d3.geoMercator();
 
 
 let path = d3.geoPath().projection(projection);
@@ -339,13 +339,9 @@ function ready([local_us, local_happiness_data, local_ids]) {
   
   xFinalScale = d3.scaleBand().domain(varFreedom.top(Infinity).sort((a, b) => a.key-b.key).map(d => d.key));
 
-  console.log("4")
   loadMap();
-  console.log("5")
   loadLine();
-  console.log("6")
   loadBar();
-  console.log("7")
   loadLoli();
   loadRankBar();
 }
@@ -522,9 +518,7 @@ function updateSelectedCountry() {
 
 function loadLine() {  
   
-  dc.redrawAll();
-  if (lineChart)
-    lineChart.resetSvg();
+    
   lineChart = dc.lineChart("#line_chart");
   lineChart
     .width(width)
@@ -557,7 +551,7 @@ function loadLine() {
     .tickFormat((d) => (d % 1 ? null : d));
 
 
-    //dc.renderAll()
+    dc.renderAll()
 }
 
 
