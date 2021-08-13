@@ -23,8 +23,10 @@ let selectedCountryYears = {
 
 let category = "Happiness_Score";
 let year = 2021;
+let proj = 'Mercator';
 
-var projection = d3.geoMercator();
+var projection = d3.geoTwoPointAzimuthalUsa();
+
 
 let path = d3.geoPath().projection(projection);
 
@@ -49,6 +51,28 @@ let barChart3;
 let barChart4;
 let barChart5;
 let barChart6;
+
+
+function centerOnSouthAmerica(){
+  projection = d3.geoMercator().scale(300).center([-70,-15]);
+  path = d3.geoPath().projection(projection);
+}
+
+
+function centerOnEurope(){
+  projection = d3.geoMercator().scale(500).center([20,60]);
+  path = d3.geoPath().projection(projection);
+}
+
+function centerOnAsia(){
+  projection = d3.geoMercator().scale(500).center([80,30]);
+  path = d3.geoPath().projection(projection);
+}
+
+function centerOnAustraliaNZ(){
+  projection = d3.geoMercator().scale(500).center([150,-30]);
+  path = d3.geoPath().projection(projection);
+}
 
 const svg = d3
   .select("#map")
@@ -138,6 +162,61 @@ document.getElementById("cat").addEventListener("change", () => {
   category = document.getElementById("cat").value;
   ready([]);
 });
+
+document.getElementById("proj").addEventListener("change", () => {
+  proj = document.getElementById("proj").value;
+  if(proj == 'Mercator'){
+    projection = d3.geoMercator();
+  }
+  if(proj== 'Aitoff'){
+    projection = d3.geoAitoff(); 
+  }
+  if(proj== 'August'){
+    projection = d3.geoAugust(); 
+  }
+  if(proj== 'Azimuthal'){
+    projection = d3.geoAzimuthalEqualArea(); 
+  }
+  if(proj== 'Baker'){
+    projection = d3.geoBaker(); 
+  }
+  if(proj== 'Bertin'){
+    projection = d3.geoBertin1953(); 
+  }
+  if(proj== 'Bromley'){
+    projection = d3.geoBromley(); 
+  }
+  if(proj== 'Africa'){
+    projection = d3.geoChamberlinAfrica(); 
+  }
+  if(proj== 'Azimuthal_USA'){
+    projection = d3.geoTwoPointAzimuthalUsa(); 
+  }
+
+  path = d3.geoPath().projection(projection);
+
+  if(proj == 'South_America'){
+    centerOnSouthAmerica();
+  }
+
+  if(proj == 'Europe'){
+    centerOnEurope();
+  }
+  
+  if(proj == 'Asia'){
+    centerOnAsia();
+  }
+  if(proj == 'ANZ'){
+    centerOnAustraliaNZ();
+  }
+
+
+  
+  d3.selectAll("#map > svg > *").remove()
+  ready([]);
+});
+
+// d3.geoAiry() / d3.geoAitoff() / d3.geoArmadillo() / d3.geoAugust() / d3.geoAzimuthalEqualArea() / d3.geoAzimuthalEquidistant()
 
 function ready([local_us, local_happiness_data, local_ids]) {
   console.log("INSIDE READY")
@@ -273,6 +352,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
 
 function loadMap() {
   
+  
   if(selectedCountry && mapCountry && selectedCountry.Country != mapCountry.Country){
     d3.select(".selected_country").classed("selected_country", false);
   }
@@ -301,10 +381,11 @@ function loadMap() {
       ranges[category][0] - ranges[category][0] / 10,
       ranges[category][1] + ranges[category][1] / 10,
     ])
-    .range(d3.schemeBlues[9]);
+    .range(d3.schemeRdYlBu[7]);
   
-  //d3.selectAll("svg > *").remove()
   
+  svg.attr("fill",'gray').attr("background-color",'gray');
+
   svg
     .append("g")
     .attr("class", "counties")
@@ -312,6 +393,8 @@ function loadMap() {
     .data(topojson.feature(us, us.objects.countries).features)
     .enter()
     .append("path")
+    .attr("stroke-width", 0.5)
+    .attr("stroke", "#000000")
     .attr("fill", (d) => {
       let country = getCountryDataByYear(
         nameById.get(d.id),
@@ -353,8 +436,8 @@ function loadMap() {
     .on("mouseout", function (d) {
       d3.select(this)
         .style("cursor", "default")
-        .attr("stroke-width", 0)
-        .attr("stroke", "none");
+        .attr("stroke-width", 0.5)
+        .attr("stroke", "#000000");
       hideTooltip();
     })
     .on("click", function (d) {

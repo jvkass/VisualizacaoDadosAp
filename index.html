@@ -11,6 +11,8 @@
   <script src="https://unpkg.com/crossfilter2@1.5.2/crossfilter.min.js"></script>
   <script src="https://unpkg.com/dc@4.0.5/dist/dc.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
+  
   <link rel="stylesheet" href="index.css" />
 
 </head>
@@ -38,14 +40,35 @@
       <option value="Freedom">Freedom</option>
       <option value="Generosity">Generosity</option>
       <option value="Government_Trust">Government_Trust</option>
-    </select>  <div id="map"></div>
+    </select>
+    
+    <select name="proj" id="proj">
+      <optgroup label="Projections">
+        <option value="Mercator">Mercator</option>
+        <option value="Aitoff">Aitoff</option>
+        <option value="August">August</option>
+        <option value="Azimuthal">Azimuthal</option>
+        <option value="Baker">Baker</option>
+        <option value="Bertin">Bertin</option>
+        <option value="Bromley">Bromley</option>
+      </optgroup>
+        <optgroup label="Regions">
+        <option value="Africa">Africa</option>
+        <option value="Azimuthal_USA">North America</option>
+        <option value="South_America">South America</option>
+        <option value="Europe">Europe</option>
+        <option value="Asia">Asia</option>
+        <option value="ANZ">Australia & New Zealand</option>
+      </optgroup>
+    </select>  
+     <div id="map"></div>
     <div id='selected_country_div' class='hidden'>
       <span ><b>País Selecionado: </b></span>
       <span id="selected_country"></span>
     </div>
     
     <div id="my_dataviz"></div>
-    
+
     <div id="my_dataviz_bar"></div>
 
     <div class='container'>

@@ -68,3 +68,7 @@ text {
 .clickable{
   cursor: pointer;
 }
+
+#map svg{
+  background-color: #c2c2c2;
+}
