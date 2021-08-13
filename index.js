@@ -56,8 +56,6 @@ const svg = d3
   .attr("height", height);
 
 // Lolipop Chart declaration Begin here!
-
-
   // set the dimensions and margin_lolis of the graph
   var margin_loli = {top: 10, right: 30, bottom: 40, left: 200},
       width_loli = 460 - margin_loli.left - margin_loli.right,
@@ -94,6 +92,23 @@ const svg = d3
   .attr("class", "myYaxis");
 
 // Lollipop Chart declaration ends here!
+
+// Bar Chart Custom declaration starts here!
+var margin_bar = {top: 20, right: 30, bottom: 40, left: 90},
+width_bar = 460 - margin_bar.left - margin_bar.right,
+height_bar = 400 - margin_bar.top - margin_bar.bottom;
+
+// append the svg object to the body of the page
+var svg_bar = d3.select("#my_dataviz_bar")
+.append("svg")
+.attr("width", width_bar + margin_bar.left + margin_bar.right)
+.attr("height", height_bar + margin_bar.top + margin_bar.bottom)
+.append("g")
+.attr("transform",
+      "translate(" + margin_bar.left + "," + margin_bar.top + ")");
+
+
+// Bar Chart Custom declaration ends here!
 
 let promises = [
   d3.json(
@@ -252,6 +267,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
   loadBar();
   console.log("7")
   loadLoli();
+  loadRankBar();
 }
 
 function loadMap() {
@@ -644,4 +660,82 @@ function loadLoli(){
       .style("fill", "#69b3a2")
       .attr("stroke", "black")
   
+}
+
+
+function loadRankBar(){
+
+  // filtering and sorting
+  let filtered_data = happiness_data.filter(d=>d.Year == year).sort((a,b)=>b.Happiness_Score - a.Happiness_Score);
+
+  let customCountry = selectedCountry;
+  if(!customCountry){
+    customCountry = filtered_data[0];
+  }
+
+  selectedIndex = filtered_data.findIndex(d => d.Country == customCountry.Country);
+
+  console.log(selectedIndex);
+  console.log(filtered_data[selectedIndex]);
+  console.log(filtered_data.length);
+
+  if(selectedIndex < 7){
+    filtered_data = filtered_data.slice(0,7);
+  }
+  else if(selectedIndex > 151){
+    filtered_data = filtered_data.slice(151,158);
+  }
+  else{
+    filtered_data = filtered_data.slice(selectedIndex-3,selectedIndex+4);
+  }
+
+  console.log(filtered_data);
+
+  // Add X axis
+  var x_bar = d3.scaleLinear()
+    .domain([filtered_data[6].Happiness_Score-0.5, filtered_data[0].Happiness_Score+0.5])
+    .range([ 0, width_bar]);
+
+  svg_bar.selectAll("text").remove();
+  svg_bar.selectAll("rect").remove();
+  svg_bar.selectAll("g").remove();
+  
+  svg_bar.append("g")
+    .attr("transform", "translate(0," + height_bar + ")")
+    .call(d3.axisBottom(x_bar))
+    .selectAll("text")
+      .attr("transform", "translate(-10,0)rotate(-45)")
+      .style("text-anchor", "end");
+
+  // Y axis
+  var y_bar = d3.scaleBand()
+    .range([ 0, height_bar ])
+    .domain(filtered_data.map(function(d) { return d.Country }))
+    .padding(.1);
+
+  svg_bar.append("g")
+    .call(d3.axisLeft(y_bar))
+
+  //Bars
+  svg_bar.selectAll("myRectBar")
+    .data(filtered_data)
+    .enter()
+    .append("rect")
+    .attr("x", x_bar(filtered_data[6].Happiness_Score-0.493) )
+    .attr("y", function(d) { return y_bar(d.Country); })
+    .attr("width", function(d) { return x_bar(d.Happiness_Score); })
+    .attr("height", y_bar.bandwidth() )
+    .attr("fill", "#69b3a2")
+    .append("title")
+    .text(function(d) { return `Happiness Score: ${d.Happiness_Score}` })
+
+  
+  svg_bar.selectAll("myRectBar")
+    .data(filtered_data)
+    .enter()
+    .append("text")
+    .attr("x", function(d) { return x_bar(d.Happiness_Score) + 20 } )
+    .attr("y", function(d) { return y_bar(d.Country) + 25 })
+    .attr("text-anchor", "middle")
+    .text(function(d) { return `${d.Happiness_Rank}°` })
 }
