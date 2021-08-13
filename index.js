@@ -55,6 +55,46 @@ const svg = d3
   .attr("width", width)
   .attr("height", height);
 
+// Lolipop Chart declaration Begin here!
+
+
+  // set the dimensions and margin_lolis of the graph
+  var margin_loli = {top: 10, right: 30, bottom: 40, left: 200},
+      width_loli = 460 - margin_loli.left - margin_loli.right,
+      height_loli = 500 - margin_loli.top - margin_loli.bottom;
+  
+  // append the svg_loli object to the body of the page
+  var svg_loli = d3.select("#my_dataviz")
+    .append("svg")
+      .attr("width", width_loli + margin_loli.left + margin_loli.right)
+      .attr("height", height_loli + margin_loli.top + margin_loli.bottom)
+
+  svg_loli = svg_loli.append("g")
+      .attr("transform",
+            "translate(" + margin_loli.left + "," + margin_loli.top + ")");
+
+  var x_loli = d3.scaleLinear()
+  .domain([0, 10])
+  .range([ 0, width_loli]);
+
+
+  var xAxis_loli = svg_loli.append("g")
+  .attr("transform", "translate(0," + height_loli + ")")
+  .call(d3.axisBottom(x_loli))
+  .selectAll("text")
+  .attr("transform", "translate(-10,0)rotate(-45)")
+  .style("text-anchor", "end");
+
+  // Y axis
+  var y_loli = d3.scaleBand()
+  .range([ 0, height_loli ])
+  .padding(1);
+
+  var yAxis_loli = svg_loli.append("g")
+  .attr("class", "myYaxis");
+
+// Lollipop Chart declaration ends here!
+
 let promises = [
   d3.json(
     "https://raw.githubusercontent.com/JsBatista/chess_game_dataset/master/world-110m.json"
@@ -211,6 +251,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
   console.log("6")
   loadBar();
   console.log("7")
+  loadLoli();
 }
 
 function loadMap() {
@@ -240,7 +281,7 @@ function loadMap() {
     ])
     .range(d3.schemeBlues[9]);
   
-  d3.selectAll("svg > *").remove()
+  //d3.selectAll("svg > *").remove()
   
   svg
     .append("g")
@@ -532,4 +573,75 @@ function loadBar(){
            .colors('#EDC948')
 
   dc.renderAll()
+}
+
+function loadLoli(){
+  regions = {}
+
+  filtered_data = happiness_data.filter(d=>d.Year == year).sort((a,b)=>a[category] - b[category]);
+
+  for(let i of filtered_data){
+    if(regions[i.Region]){
+      regions[i.Region].count += 1;
+      regions[i.Region].scoreTotal += i[category];
+    }
+    else{
+      regions[i.Region] = {
+        count: 1,
+        scoreTotal: i[category]
+      }
+    }
+  }
+
+  regions_data = [];
+
+
+  for(let i in regions){
+    regions_data.push({
+      Region: i,
+      Score: regions[i].scoreTotal / regions[i].count
+    })
+  }
+
+  regions_data = regions_data.sort((a,b)=>b.Score - a.Score);
+
+  console.log(regions_data);
+  
+  y_loli.domain(regions_data.map(function(d) { return d.Region; }))
+  yAxis_loli.transition().duration(1000).call(d3.axisLeft(y_loli));
+
+  xAxis_loli.transition().duration(1000).call(d3.axisBottom(x_loli))
+  
+  var j_loli = svg_loli.selectAll(".myLine")
+      .data(regions_data)
+    // update lines
+    j_loli
+      .enter()
+      .append("line")
+      .attr("class", "myLine")
+      .merge(j_loli)
+      .transition()
+      .duration(1000)
+      .attr("x1", function(d) { return x_loli(d.Score); })
+      .attr("x2", x_loli(0))
+      .attr("y1", function(d) { return y_loli(d.Region); })
+      .attr("y2", function(d) { return y_loli(d.Region); })
+      .attr("stroke", "grey")
+  
+
+  var u_loli = svg_loli.selectAll("circle")
+    .data(regions_data)
+
+    u_loli
+    .enter()
+    .append("circle")
+    .merge(u_loli)
+      .transition()
+      .duration(1000)
+      .attr("cx", function(d) { return x_loli(d.Score); })
+      .attr("cy", function(d) { return y_loli(d.Region); })
+      .attr("r", "7")
+      .style("fill", "#69b3a2")
+      .attr("stroke", "black")
+  
 }

@@ -60,3 +60,7 @@
   display: grid-inline;
   grid-template-columns: auto auto auto;
 }
+
+text {
+  fill:black;
+}
