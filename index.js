@@ -10,6 +10,7 @@ let happiness_data;
 let ids;
 
 let selectedCountry;
+let mapCountry;
 let selectedCountryYears = {
   2015: {},
   2016: {},
@@ -94,7 +95,7 @@ const svg = d3
 // Lollipop Chart declaration ends here!
 
 // Bar Chart Custom declaration starts here!
-var margin_bar = {top: 20, right: 30, bottom: 40, left: 90},
+var margin_bar = {top: 20, right: 30, bottom: 40, left: 200},
 width_bar = 460 - margin_bar.left - margin_bar.right,
 height_bar = 400 - margin_bar.top - margin_bar.bottom;
 
@@ -271,6 +272,11 @@ function ready([local_us, local_happiness_data, local_ids]) {
 }
 
 function loadMap() {
+  
+  if(selectedCountry && mapCountry && selectedCountry.Country != mapCountry.Country){
+    d3.select(".selected_country").classed("selected_country", false);
+  }
+
   let ranges = {
     Happiness_Score: d3.extent(happiness_data, (d) => d.Happiness_Score),
     GDP_Per_Capita: d3.extent(happiness_data, (d) => d.GDP_Per_Capita),
@@ -362,9 +368,11 @@ function loadMap() {
       d3.select(".selected_country").classed("selected_country", false);
       if (country && selectedCountry && selectedCountry.Name === country.Name) {
         selectedCountry = null;
+        mapCountry = null;
       } else {
         d3.select(this).classed("selected_country", true);
         selectedCountry = country;
+        mapCountry = country;
       }
       
 
