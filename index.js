@@ -679,10 +679,10 @@ function loadRankBar(){
   console.log(filtered_data[selectedIndex]);
   console.log(filtered_data.length);
 
-  if(selectedIndex < 7){
+  if(selectedIndex <= 3){
     filtered_data = filtered_data.slice(0,7);
   }
-  else if(selectedIndex > 151){
+  else if(selectedIndex >= 155){
     filtered_data = filtered_data.slice(151,158);
   }
   else{
@@ -725,6 +725,8 @@ function loadRankBar(){
     .attr("y", function(d) { return y_bar(d.Country); })
     .attr("width", function(d) { return x_bar(d.Happiness_Score); })
     .attr("height", y_bar.bandwidth() )
+    .attr("class", "clickable" )
+    .on("click", d=> { selectedCountry = d; updateSelectedCountry() })
     .attr("fill", "#69b3a2")
     .append("title")
     .text(function(d) { return `Happiness Score: ${d.Happiness_Score}` })
@@ -738,4 +740,5 @@ function loadRankBar(){
     .attr("y", function(d) { return y_bar(d.Country) + 25 })
     .attr("text-anchor", "middle")
     .text(function(d) { return `${d.Happiness_Rank}°` })
+
 }
