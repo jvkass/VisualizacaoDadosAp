@@ -135,6 +135,23 @@ var svg_bar = d3.select("#my_dataviz_bar")
 
 // Bar Chart Custom declaration ends here!
 
+// ParaLine Chart declaration starts here!
+
+var margin_para_line = {top: 30, right: 10, bottom: 10, left: 50},
+width_para_line = 500 - margin_para_line.left - margin_para_line.right,
+height_para_line = 400 - margin_para_line.top - margin_para_line.bottom;
+
+// append the svg object to the body of the page
+var svg_para_line = d3.select("#my_dataviz_para_line")
+.append("svg")
+.attr("width", width_para_line + margin_para_line.left + margin_para_line.right)
+.attr("height", height_para_line + margin_para_line.top + margin_para_line.bottom)
+.append("g")
+.attr("transform",
+      "translate(" + margin_para_line.left + "," + margin_para_line.top + ")");
+
+// ParaLine Chart declaration ends here!
+
 let promises = [
   d3.json(
     "https://raw.githubusercontent.com/JsBatista/chess_game_dataset/master/world-110m.json"
@@ -209,8 +226,6 @@ document.getElementById("proj").addEventListener("change", () => {
   if(proj == 'ANZ'){
     centerOnAustraliaNZ();
   }
-
-
   
   d3.selectAll("#map > svg > *").remove()
   ready([]);
@@ -340,6 +355,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
   xFinalScale = d3.scaleBand().domain(varFreedom.top(Infinity).sort((a, b) => a.key-b.key).map(d => d.key));
 
   loadMap();
+  loadParaLine();
   loadLine();
   loadBar();
   loadLoli();
@@ -825,5 +841,194 @@ function loadRankBar(){
     .attr("y", function(d) { return y_bar(d.Country) + 25 })
     .attr("text-anchor", "middle")
     .text(function(d) { return `${d.Happiness_Rank}°` })
+
+}
+
+function loadParaLine(){
+  // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
+  dimensions = [
+    'Pais',
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ];
+  
+  svg_para_line.selectAll("text").remove();
+  svg_para_line.selectAll("rect").remove();
+  svg_para_line.selectAll("line").remove();
+  svg_para_line.selectAll("path").remove();
+  svg_para_line.selectAll("g").remove();
+
+  let correct_data = {};
+  let countries = [];
+
+  for(let i = 0; i < happiness_data.length; i++){
+    if(!correct_data[happiness_data[i].Country]){
+      correct_data[happiness_data[i].Country] = {
+        'Pais': 0,
+        '2015': 0,
+        '2016': 0,
+        '2017': 0,
+        '2018': 0,
+        '2019': 0,
+        '2020': 0,
+        '2021': 0,
+        Country: happiness_data[i].Country
+      }
+      countries.push(happiness_data[i].Country);
+    }
+    correct_data[happiness_data[i].Country][happiness_data[i].Year] = +happiness_data[i].Happiness_Rank;
+    if(happiness_data[i].Year == 2015){
+      correct_data[happiness_data[i].Country].Pais = +happiness_data[i].Happiness_Rank;
+    }
+  } 
+
+  correct_data = Object.values(correct_data).sort((a,b)=>a['2015']-b['2015']);
+  console.log(correct_data)
+  
+  let local_selected_contry = selectedCountry?selectedCountry:correct_data[0]['2015'];
+
+  // Descobrindo o índice do país selecionado
+  let selectedIndex = correct_data.findIndex(d => d.Country == local_selected_contry.Country);
+
+  if(selectedIndex <= 3){
+    correct_data = correct_data.slice(0,7);
+  }
+  else if(selectedIndex >= 155){
+    correct_data = correct_data.slice(151,158);
+  }
+  else{
+    correct_data = correct_data.slice(selectedIndex-3,selectedIndex+4);
+  }
+  
+
+
+  let values = [];
+  // Vamos descobrir qual é o maior ranking que aparece, no início, faremos de 1 a 10, e aumentamos se necessário
+  for(let i = 0; i < correct_data.length; i++){
+    console.log(Object.values(correct_data[i]))
+    values = [...values, ...Object.values(correct_data[i]).slice(0,7)];
+  }
+
+  // [TODO] ALTERAR COMO ESSA COR ESTÁ DEFINIDA, ISSO VAI QUEBRAR, PaisCISO USAR OS DADOS DEPOIS DE FILTRAR
+  let color = d3.scaleOrdinal()
+  .domain([countries])
+  .range([ "#a6cee3","#1f78b4","#b2df8a","#33a02c","#ff7f00","#e31a1c","#fdbf6f","#fb9a99","#cab2d6","#6a3d9a"])
+
+  console.log(values)
+
+  let [minRank, maxRank] = d3.extent(values);
+  console.log(minRank);
+  console.log(maxRank);
+
+  // For each dimension, I build a linear scale. I store all in a y object
+  var y = {}
+  for (i in dimensions) {
+    name = dimensions[i]
+    if(name == 'Pais'){
+      y[name] = d3.scaleLinear()
+      .domain([correct_data[0]['2015'], correct_data[0]['2015']+6])
+      .range([0, height_para_line])
+    }
+    else{
+      y[name] = d3.scaleLinear()
+      .domain([minRank, maxRank])
+      .range([0, height_para_line])
+    }
+  }
+
+  console.log(y['2015'](1))
+
+  // Build the X scale -> it find the best position for each Y axis
+  x = d3.scalePoint()
+    .range([0, width_para_line])
+    .padding(1)
+    .domain(dimensions);
+
+  // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
+  function path(d) {
+    console.log(d)
+      return d3.line()(dimensions.map(function(p) { 
+        return [x(p), y[p](d[p])]; }));
+  }
+
+  // Draw the lines
+  svg_para_line
+    .selectAll("myPath")
+    .data(correct_data)
+    .enter().append("path")
+    .attr("d",  path)
+    .style("fill", "none")
+    .style("stroke", d => {
+      return color(d.Country);
+    })
+    .style("opacity", d => {
+      if(d.Country == local_selected_contry.Country){
+        return 1;
+      }
+      return 0.3;
+    }
+    )
+      .attr("stroke-width", d => { 
+      if(d.Country == local_selected_contry.Country){
+        return 6;
+      }
+      return 3;}
+    )
+    .on("mouseover", function (d) {
+    d3.select(this)
+    .style("fill", "none")
+      .attr("stroke-width", 10)
+    .style("opacity", 1);
+    }).on("mouseout", function (d) {
+    d3.select(this)
+    .style("fill", "none")
+      .attr("stroke-width", d=>{
+      if(d.Country == local_selected_contry.Country){
+        return 6;
+      }
+      return 3;
+    })
+      .style("opacity", d => {
+      if(d.Country == local_selected_contry.Country){
+        return 1;
+      }
+      return 0.3;
+    });
+    })
+    .on("click", d => {
+      console.log(d)
+    })
+  let test = -1;
+  // Draw the axis:
+  svg_para_line.selectAll("myAxis")
+    // For each dimension of the dataset I add a 'g' element:
+    .data(dimensions).enter()
+    .append("g")
+    // I translate this element to its right position on the x axis
+    .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+    // And I build the axis with the call function
+    .each(function(d) {
+      d3.select(this).call(d3.axisLeft(y[d]).tickFormat(d=>{
+        if(d%1==0 && test < 6){
+          test += 1;
+          return  `${correct_data[test].Country} : ${d}`;
+        }
+        else if(d%1==0){
+          return d
+        }
+        return "";
+      }
+      )) })
+    // Add axis title
+    .append("text")
+      .style("text-anchor", "middle")
+      .attr("y", -9)
+      .text(function(d) { return d; })
+      .style("fill", "black")
 
 }
