@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Taxa de desemprego nos EUA em agosto de 2016</title>
+  <title>Taxa de desemprego nos EUA em agosto de 2016</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
@@ -13,157 +14,172 @@
   <script src="https://unpkg.com/dc@4.0.5/dist/dc.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
-  
+
   <link rel="stylesheet" href="index.css" />
 
 </head>
+
 <body>
   <div id="tooltip" class="hidden">
-      <p><b><span id='country_name'></span></b><br><span id='country_cat'></span> <span id='country_value'></span></p>
+    <p><b><span id='country_name'></span></b><br><span id='country_cat'></span> <span id='country_value'></span></p>
   </div>
   <main id="container" class="container">
-    <header>
-	   <h1>Mapa de Felicidade</h1>
-     <select name="years" id="years">
-      <option value="2015">2015</option>
-      <option value="2016">2016</option>
-      <option value="2017">2017</option>
-      <option value="2018">2018</option>
-      <option value="2019">2019</option>
-      <option value="2020">2020</option>
-      <option value="2021" selected="selected">2021</option>
-    </select>
-    <select name="cat" id="cat">
-      <option value="Happiness_Score">Happiness_Score</option>
-      <option value="GDP_Per_Capita">GDP_Per_Capita</option>
-      <option value="Social_Support">Social_Support</option>
-      <option value="Life_Expectancy">Life_Expectancy2018</option>
-      <option value="Freedom">Freedom</option>
-      <option value="Generosity">Generosity</option>
-      <option value="Government_Trust">Government_Trust</option>
-    </select>
-    
-    <select name="proj" id="proj">
-      <optgroup label="Projections">
-        <option value="Mercator">Mercator</option>
-        <option value="Aitoff">Aitoff</option>
-        <option value="August">August</option>
-        <option value="Azimuthal">Azimuthal</option>
-        <option value="Baker">Baker</option>
-        <option value="Bertin">Bertin</option>
-        <option value="Bromley">Bromley</option>
-      </optgroup>
+    <header id="header" class="header">
+      <text id="title" class="title">Bem vindos ao rank de felicidade</text>
+      <text id="subtitle" class="subtitle">A ideia do projeto é conceituar a realidade que os paises atualmente convivem junto com o indice de felicidade dos mesmos.</text>
+
+      <h1 id="mapaTitle" class="mapaTitle">Mapa de Felicidade</h1>
+      <select name="years" id="years" class="inputAno">
+        <option value="2015">2015</option>
+        <option value="2016">2016</option>
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021" selected="selected">2021</option>
+      </select>
+      <select name="cat" id="cat" class="inputCategoria">
+        <option value="Happiness_Score">Happiness_Score</option>
+        <option value="GDP_Per_Capita">GDP_Per_Capita</option>
+        <option value="Social_Support">Social_Support</option>
+        <option value="Life_Expectancy">Life_Expectancy2018</option>
+        <option value="Freedom">Freedom</option>
+        <option value="Generosity">Generosity</option>
+        <option value="Government_Trust">Government_Trust</option>
+      </select>
+
+      <select name="proj" id="proj" class="inputProjecao">
+        <optgroup label="Projections">
+          <option value="Mercator">Mercator</option>
+          <option value="Aitoff">Aitoff</option>
+          <option value="August">August</option>
+          <option value="Azimuthal">Azimuthal</option>
+          <option value="Baker">Baker</option>
+          <option value="Bertin">Bertin</option>
+          <option value="Bromley">Bromley</option>
+        </optgroup>
         <optgroup label="Regions">
-        <option value="Africa">Africa</option>
-        <option value="Azimuthal_USA">North America</option>
-        <option value="South_America">South America</option>
-        <option value="Europe">Europe</option>
-        <option value="Asia">Asia</option>
-        <option value="ANZ">Australia & New Zealand</option>
-      </optgroup>
-    </select>  
-     <div id="map"></div>
-    <div id='selected_country_div' class='hidden'>
-      <span ><b>País Selecionado: </b></span>
-      <span id="selected_country"></span>
-    </div>
-    
-    <div id="chart"></div>
-    <div id="my_dataviz"></div>
-    <div id="my_dataviz_para_line"></div>
+          <option value="Africa">Africa</option>
+          <option value="Azimuthal_USA">North America</option>
+          <option value="South_America">South America</option>
+          <option value="Europe">Europe</option>
+          <option value="Asia">Asia</option>
+          <option value="ANZ">Australia & New Zealand</option>
+        </optgroup>
+      </select>
+      <div id="map" class="map"></div>
+      <div id='selected_country_div' class='hidden'>
+        <span class="paisSelecionado"><b>País Selecionado: </b></span>
+        <span class="pais" id="selected_country"></span>
+      </div>
 
-    <div id="my_dataviz_bar"></div>
+      <h4 class="titleSpider">Comparativo dos atributos</h4>
+      <div id="chart" class="spider"></div>
 
-    <div class='container'>
-      <div class='content'>
+      <h4 class="titleLine">Média de Felicidade Mundial</h4>
       <div class='container'>
-      <div class='row'>
-          <div class='span12' id='line_chart'>
-            <h4 id='line_chart_title'>Média de Felicidade Mundial</h4>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='line' id='line_chart'>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      </div>
-    </div>
-    
-    <div class='container'>
-      <div class='content'>
-      <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_1'>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
-    <div class='container'>
-      <div class='content'>
-      <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_2'>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
-    
-    <div class='container'>
-      <div class='content'>
-      <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_3'>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
 
-    <div class='container'>
-      <div class='content'>
+      <h4 class="titleLolipop">Classificação por Região</h4>
+      <div id="my_dataviz" class="lolipop"></div>
+
+      <h4 class="titleLineClassification">Classificação dos 7 primeiros paises/ano</h4>
+      <div id="my_dataviz_para_line" class="lineClassification"></div>
+
+      <h4 class="titleBarClassification">Classificação dos 7 primeiros paises</h4>
+      <div id="my_dataviz_bar" class="barClassification"></div>
+
+      <h4 class="titleBarChart">
+        Variação dos atributos durante os anos: Média Global/País
+      </h4>
+
       <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_4'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='freedom' id='bar_chart_1'>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      </div>
-    </div>
-
-    
-    <div class='container'>
-      <div class='content'>
       <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_5'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='gdp' id='bar_chart_2'>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      </div>
-    </div>
 
-    
-    
-    <div class='container'>
-      <div class='content'>
       <div class='container'>
-      <div class='row'>
-          <div class='span12 bar_charts' id='bar_chart_6'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='generosidade' id='bar_chart_3'>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class='container'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='confianca' id='bar_chart_4'>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    
 
-    
+      <div class='container'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='expectativa' id='bar_chart_5'>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class='container'>
+        <div class='content'>
+          <div class='container'>
+            <div class='row'>
+              <div class='suporte' id='bar_chart_6'>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
   </main>
-  
-<script src='index.js' />
 
-<!-- Bootstrap javascript files -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <script src='index.js' />
+
+  <!-- Bootstrap javascript files -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
+
 </html>
