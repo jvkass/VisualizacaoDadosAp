@@ -386,6 +386,7 @@
   position: absolute;
   width: auto;
   height: auto;
+  z-index: 99;
   padding: 10px;
   border: solid 1px darkgray;
   background-color: white;

@@ -549,7 +549,7 @@ function updateSelectedCountry() {
     document.getElementById("selected_country_div").className = "";
     document.getElementById("selected_country").innerText =
       selectedCountry.Country;
-    document.getElementById("line_chart_title").innerText =
+    document.getElementsByClassName("titleLine")[0].innerText =
       "Média de felicidade do País: " + selectedCountry.Country;
 
     for (let i = 0; i < happiness_data.length; i++) {
@@ -559,13 +559,13 @@ function updateSelectedCountry() {
     }
   } else {
     document.getElementById("selected_country_div").className = "hidden";
-    document.getElementById("line_chart_title").innerText =
+    document.getElementsByClassName("titleLine")[0].innerText =
       "Média de felicidade Mundial";
   }
+  console.log("TEST")
 
   ready([]);
 }
-
 function loadLine() {
   lineChart = dc.lineChart("#line_chart");
   lineChart
