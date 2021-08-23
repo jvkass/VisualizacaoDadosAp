@@ -506,3 +506,11 @@ text {
 .lineClassification path{
   cursor: pointer;
 }
+
+circle {
+  cursor: pointer;
+}
+
+.dot{
+  cursor: pointer;
+}

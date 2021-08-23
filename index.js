@@ -406,6 +406,50 @@ function ready([local_us, local_happiness_data, local_ids]) {
   loadBar();
   loadLoli();
   loadRankBar();
+
+  document.querySelectorAll('circle.dot')[0].addEventListener("click", ()=>{setYear(0)})
+  document.querySelectorAll('circle.dot')[1].addEventListener("click", ()=>{setYear(1)})
+  document.querySelectorAll('circle.dot')[2].addEventListener("click", ()=>{setYear(2)})
+  document.querySelectorAll('circle.dot')[3].addEventListener("click", ()=>{setYear(3)})
+  document.querySelectorAll('circle.dot')[4].addEventListener("click", ()=>{setYear(4)})
+  document.querySelectorAll('circle.dot')[5].addEventListener("click", ()=>{setYear(5)})
+  document.querySelectorAll('circle.dot')[6].addEventListener("click", ()=>{setYear(6)})
+}
+
+function setYear(y) {
+  document.getElementById("years").selectedIndex = y;
+  year = 2015+y;
+  ready([]);
+}
+
+function setCategory(sel_cat){
+  category = sel_cat;
+  if(sel_cat == "Freedom"){
+    document.getElementById("cat").selectedIndex = 4;
+  } 
+  else if(sel_cat == "Social_Support"){
+    document.getElementById("cat").selectedIndex = 2;
+  } 
+  else if(sel_cat == "Life_Expectancy"){
+    document.getElementById("cat").selectedIndex = 3;
+  } 
+  else if(sel_cat == "Government_Trust"){
+    document.getElementById("cat").selectedIndex = 6;
+  } 
+  else if(sel_cat == "Generosity"){
+    document.getElementById("cat").selectedIndex = 5;
+  } 
+  else if(sel_cat == "GDP_Per_Capita"){
+    document.getElementById("cat").selectedIndex = 1;
+  } 
+  try{
+    for(let i = 0; i < document.getElementsByClassName("spider_toolTip").length; i++){
+      // mate todos eles
+      document.getElementsByClassName("spider_toolTip")[i].style.display = 'none';
+    }
+  }
+  catch(e){}
+  ready([]);
 }
 
 function loadMap() {
@@ -1538,7 +1582,11 @@ function loadSpider() {
           })
           .on("mouseout", function (d) {
             spider_tooltip.style("display", "none");
-          });
+          })
+          .on("click", function (d) {
+            setCategory(d.area);
+            console.log(d);
+          });;
 
         series++;
       });
