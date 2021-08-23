@@ -160,8 +160,8 @@ var svg_para_line = d3
 
 // Spider chart declaration starts here!
 
-var spider_width = 300,
-  spider_height = 300;
+var spider_width = window.innerWidth*0.20,
+  spider_height = window.innerWidth*0.20;
 
 // Config for the Radar chart
 var spider_config = {
@@ -569,7 +569,7 @@ function updateSelectedCountry() {
 function loadLine() {
   lineChart = dc.lineChart("#line_chart");
   lineChart
-    .width(width)
+    .width(window.innerWidth*0.5)
     .height(500)
     .dimension(yearHDim)
     .margins({ top: 30, right: 50, bottom: 25, left: 40 })
@@ -1201,7 +1201,7 @@ function loadSpider() {
     draw: function (id, d, options) {
       var cfg = {
         radius: 5,
-        w: 600,
+        w: window.innerWidth*0.5,
         h: 600,
         factor: 1,
         factorLegend: 0.85,
