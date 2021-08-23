@@ -315,61 +315,48 @@
 .freedom {
   /* freedom */
 
-  position: absolute;
   width: 378px;
   height: 412px;
   left: 86px;
-  top: 2484px;
 }
 
 .gdp {
   /* gdp */
 
-  position: absolute;
   width: 378px;
   height: 412px;
-  left: 537px;
-  top: 2484px;
+  left: 86px;
 }
 
 .generosidade {
   /* generosidade */
-
-  position: absolute;
   width: 378px;
   height: 412px;
-  left: 962px;
-  top: 2484px;
+  left: 86px;
 }
 
 .confianca {
   /* confiança */
 
-  position: absolute;
   width: 378px;
   height: 412px;
-  left: 124px;
-  top: 2981px;
+  left: 86px;
 }
 
 .expectativa {
   /* expectativa */
 
-  position: absolute;
   width: 378px;
   height: 412px;
-  left: 535px;
-  top: 2981px;
+  left: 86px;
 }
 
 .suporte {
   /* suporte */
 
-  position: absolute;
   width: 378px;
   height: 412px;
-  left: 962px;
-  top: 2981px;
+  left: 86px;
 }
 
 .counties {
@@ -425,6 +412,15 @@
 }
 
 #bar_chart_2 svg g g.axis.y {
+  display: none;
+}
+#bar_chart_3 svg g g.axis.y {
+  display: none;
+}
+#bar_chart_5 svg g g.axis.y {
+  display: none;
+}
+#bar_chart_6 svg g g.axis.y {
   display: none;
 }
 
@@ -489,4 +485,14 @@ text {
 .spider_toolTip span {
   font-weight: 500;
   color: #081f2c;
+}
+
+.grid3{
+  display: grid;
+  grid-template-columns: auto auto auto;
+  
+  position: absolute;
+  top: 2500px;
+
+  left: calc((100% - 1200px)/ 2)  ;
 }
