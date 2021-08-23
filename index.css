@@ -1,23 +1,30 @@
 .header {
   /* Header */
 
-  position: absolute;
-  width: 100%;
-  height: 225px;
+  /*position: absolute;*/
+  /*height: 225px;
   left: 0px;
   top: 0px;
+  */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
+  padding: 20px;
+  
   background: #980000;
 }
 
 .title {
   /* Title */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 403px;
   height: 21px;
-  left: 142px;
-  top: 37px;
+  /*left: 142px;
+  top: 37px;*/
 
   font-family: Roboto;
   font-style: normal;
@@ -31,11 +38,11 @@
 .subtitle {
   /* subtitle */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 403px;
   height: 97px;
-  left: 128px;
-  top: 95px;
+  /*left: 128px;
+  top: 95px;*/
 
   font-family: Roboto;
   font-style: normal;
@@ -50,11 +57,11 @@
   /* Input Ano */
 
   outline: none;
-  position: absolute;
+  /*position: absolute;*/
   width: 224px;
   height: 50px;
-  left: 397px;
-  top: 199px;
+  /*left: 397px;
+  top: 199px;*/
 
   background: #ffffff;
   border: 1px solid #b1b1b1;
@@ -65,11 +72,11 @@
 .inputCategoria {
   /* Input Categoria */
   outline: none;
-  position: absolute;
+  /*position: absolute;*/
   width: 241px;
   height: 50px;
-  left: 602px;
-  top: 199px;
+  /*left: 602px;
+  top: 199px;*/
 
   background: #ffffff;
   border: 1px solid #b1b1b1;
@@ -80,11 +87,11 @@
   /* Input Projecao */
   outline: none;
 
-  position: absolute;
+  /*position: absolute;*/
   width: 219px;
   height: 50px;
-  left: 823px;
-  top: 199px;
+  /*left: 823px;
+  top: 199px;*/
 
   background: #ffffff;
   border: 1px solid #b1b1b1;
@@ -95,11 +102,11 @@
 .mapaTitle {
   /* Mapa de felicidade */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 308px;
   height: 42px;
-  left: 259px;
-  top: 313px;
+  /*left: 259px;
+  top: 313px;*/
 
   font-family: Roboto;
   font-style: normal;
@@ -113,21 +120,21 @@
 .map {
   /* mapa */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 959px;
   height: 602px;
-  left: 241px;
-  top: 415px;
+  /*left: 241px;
+  top: 415px;*/
 }
 
 .paisSelecionado {
   /* País Selecionado */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 269px;
   height: 24px;
-  left: 353px;
-  top: 1033px;
+  /*left: 353px;
+  top: 1033px;*/
 
   font-family: Roboto;
   font-style: normal;
@@ -141,11 +148,11 @@
 .pais {
   /* pais */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 66px;
   height: 24px;
-  left: 540px;
-  top: 1033px;
+  /*left: 540px;
+  top: 1033px;*/
 
   font-family: Roboto;
   font-style: normal;
@@ -159,7 +166,7 @@
 .titleSpider {
   /* Comparativo dos atributos */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 331px;
   height: 24px;
   left: 105px;
@@ -177,7 +184,7 @@
 .spider {
   /* Grafico Spider */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 438px;
   height: 375px;
   left: 72px;
@@ -187,7 +194,7 @@
 .titleLine {
   /* Média de Felicidade Mundial */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 331px;
   height: 24px;
   left: 647px;
@@ -205,7 +212,7 @@
 .line {
   /* Linechart */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 865px;
   height: 446px;
   left: 536px;
@@ -215,7 +222,7 @@
 .titleLolipop {
   /* Classificação por Região */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 269px;
   height: 28px;
   left: 86px;
@@ -233,7 +240,7 @@
 .lolipop {
   /* Lolipop */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 406px;
   height: 491px;
   left: 72px;
@@ -243,7 +250,7 @@
 .titleLineClassification {
   /* Classificação dos 7 primeiros paises/ano */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 446px;
   height: 28px;
   left: 520px;
@@ -261,7 +268,7 @@
 .lineClassification {
   /* LineClassification */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 448px;
   height: 401px;
   left: 520px;
@@ -271,7 +278,7 @@
 .titleBarClassification {
   /* Classificação dos 7 primeiros paises */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 398px;
   height: 28px;
   left: 1035px;
@@ -289,7 +296,7 @@
 .barClassification {
   /* BarClassification */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 320px;
   height: 374px;
   left: 1035px;
@@ -299,7 +306,7 @@
 .titleBarChart {
   /* Variação dos atributos durante os anos: Média Global/País */
 
-  position: absolute;
+  /*position: absolute;*/
   width: 635px;
   height: 28px;
   left: 200px;
@@ -460,7 +467,7 @@ text {
 
 .spider_toolTip {
   pointer-events: none;
-  position: absolute;
+  /*position: absolute;*/
   display: none;
   min-width: 50px;
   height: auto;
@@ -479,7 +486,7 @@ text {
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
   border-top: 12px solid white;
-  position: absolute;
+  /*position: absolute;*/
   bottom: -10px;
   left: 50%;
   margin-left: -12px;
@@ -493,7 +500,7 @@ text {
   display: grid;
   grid-template-columns: auto auto auto;
   
-  position: absolute;
+  /*position: absolute;*/
   top: 2500px;
 
   left: calc((100% - 1200px)/ 2)  ;
