@@ -474,6 +474,11 @@ text {
   color: #081f2c;
 }
 
+.rowHeader {
+  display: flex;
+  padding-top: 10%;
+}
+
 .row {
   display: flex;
 }
