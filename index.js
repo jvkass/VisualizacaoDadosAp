@@ -70,6 +70,19 @@ function centerOnAustraliaNZ() {
   path = d3.geoPath().projection(projection);
 }
 
+function centerOnUSA() {
+  projection = d3.geoTwoPointAzimuthalUsa();
+  path = d3.geoPath().projection(projection);
+}
+
+function centerOnAfrica() {
+  projection = d3.geoChamberlinAfrica();
+  path = d3.geoPath().projection(projection);
+}
+
+
+
+
 const svg = d3
   .select("#map")
   .append("svg")
@@ -783,6 +796,45 @@ function loadLoli() {
     .enter()
     .append("circle")
     .merge(u_loli)
+    .on("click", (d) => {
+      if(d.Region == "Australia and New Zealand"){
+        proj = "ANZ";
+        centerOnAustraliaNZ();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "North America"){
+        proj = "Azimuthal_USA";
+        centerOnUSA();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Western Europe" || d.Region == "Central and Eastern Europe"){
+        proj = "Europe";
+        centerOnEurope();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Eastern Asia" || d.Region == "Southeastern Asia" || d.Region == "South Asia" || d.Region == "Southern Asia"){
+        proj = "Asia";
+        centerOnAsia();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Sub-Saharan Africa" || d.Region == "Middle East and Northern Africa"){
+        proj = "Africa";
+        centerOnAfrica();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Latin America and Caribbean"){
+        proj = "South_America";
+        centerOnSouthAmerica();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      console.log(d)
+    })
     .transition()
     .duration(1000)
     .attr("cx", function (d) {
@@ -793,7 +845,7 @@ function loadLoli() {
     })
     .attr("r", "7")
     .style("fill", "#69b3a2")
-    .attr("stroke", "black");
+    .attr("stroke", "black")
 }
 
 function loadRankBar() {
@@ -1067,7 +1119,8 @@ function loadParaLine() {
         });
     })
     .on("click", (d) => {
-      console.log(d);
+      selectedCountry = d;
+      updateSelectedCountry();
     });
   let test = -1;
   // Draw the axis:
