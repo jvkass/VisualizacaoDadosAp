@@ -49,6 +49,7 @@
 .inputAno {
   /* Input Ano */
 
+  outline: none;
   position: absolute;
   width: 224px;
   height: 50px;
@@ -63,7 +64,7 @@
 
 .inputCategoria {
   /* Input Categoria */
-
+  outline: none;
   position: absolute;
   width: 241px;
   height: 50px;
@@ -77,6 +78,7 @@
 
 .inputProjecao {
   /* Input Projecao */
+  outline: none;
 
   position: absolute;
   width: 219px;
@@ -87,7 +89,7 @@
   background: #ffffff;
   border: 1px solid #b1b1b1;
   box-sizing: border-box;
-  border-radius: 99px;
+  border-radius: 0px 99px 99px 0px;
 }
 
 .mapaTitle {
