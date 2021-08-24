@@ -50,6 +50,10 @@ let barChart4;
 let barChart5;
 let barChart6;
 
+function roundNumber(num){
+  return Math.floor(Number(num)*100)/100
+}
+
 function centerOnSouthAmerica() {
   projection = d3.geoMercator().scale(300).center([-70, -15]);
   path = d3.geoPath().projection(projection);
@@ -399,6 +403,7 @@ function ready([local_us, local_happiness_data, local_ids]) {
       .map((d) => d.key)
   );
 
+
   loadMap();
   loadSpider();
   loadParaLine();
@@ -407,13 +412,24 @@ function ready([local_us, local_happiness_data, local_ids]) {
   loadLoli();
   loadRankBar();
 
-  document.querySelectorAll('circle.dot')[0].addEventListener("click", ()=>{setYear(0)})
-  document.querySelectorAll('circle.dot')[1].addEventListener("click", ()=>{setYear(1)})
-  document.querySelectorAll('circle.dot')[2].addEventListener("click", ()=>{setYear(2)})
-  document.querySelectorAll('circle.dot')[3].addEventListener("click", ()=>{setYear(3)})
-  document.querySelectorAll('circle.dot')[4].addEventListener("click", ()=>{setYear(4)})
-  document.querySelectorAll('circle.dot')[5].addEventListener("click", ()=>{setYear(5)})
-  document.querySelectorAll('circle.dot')[6].addEventListener("click", ()=>{setYear(6)})
+  if(selectedCountry && selectedCountry.Country)
+    document.getElementById("titleLineClassification").innerText = "Ranking dos países em "+year+" focado em: " + selectedCountry.Country;
+  else
+    document.getElementById("titleLineClassification").innerText = "Ranking dos países em "+year;
+
+
+  for(let i = 0; i < 7; i++)
+  document.querySelectorAll('circle.dot')[i].addEventListener("click", ()=>{setYear(i)
+    document.getElementById("years").scrollIntoView({behavior: "smooth"});})
+
+
+  for(let i = 1; i < 7; i++)
+    for(let j = 0; j < 6; j++)
+      document.querySelectorAll(`#bar_chart_${i} .bar`)[j].addEventListener("click", ()=>{
+        setYear(j)
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
+      })
+    
 }
 
 function setYear(y) {
@@ -585,7 +601,7 @@ function showTooltip(country_name, country_value, cat, x, y) {
   t.select("#country_name").text(country_name);
   if (country_name != "Dados não disponíveis") {
     t.select("#country_cat").text(cat + ":");
-    t.select("#country_value").text(country_value);
+    t.select("#country_value").text(roundNumber(country_value));
   } else {
     t.select("#country_cat").text("");
     t.select("#country_value").text("");
@@ -601,13 +617,36 @@ function showTooltip(country_name, country_value, cat, x, y) {
   t.style("left", x + "px").style("top", y + h / 2 + "px");
 }
 
+function showCustomTooltip(text, val, x, y) {
+  const offset = 10;
+  const t = d3.select("#tooltip");
+
+  t.select("#country_cat").text("");
+  t.select("#country_name").text(text);
+  t.select("#country_value").text(roundNumber(val));
+  t.classed("hidden", false);
+  
+  t.style("left", x + "px").style("top", y + "px");
+}
+
+
 function updateSelectedCountry() {
   if (selectedCountry) {
     document.getElementById("selected_country_div").className = "";
-    document.getElementById("selected_country").innerText =
-      selectedCountry.Country;
+    document.getElementById("selected_country").innerText = selectedCountry.Country;
+
+    document.getElementById("spiderChartTitle").innerText = `Atributos x Média: ${selectedCountry.Country}`
+
     document.getElementsByClassName("titleLine")[0].innerText =
       "Média de felicidade do País: " + selectedCountry.Country;
+
+      document.getElementById("barChartTitle").innerText =
+        "Variação dos atributos durante os anos: " + selectedCountry.Country;
+
+
+        
+
+      
 
     for (let i = 0; i < happiness_data.length; i++) {
       if (happiness_data[i].Country == selectedCountry.Country) {
@@ -618,6 +657,12 @@ function updateSelectedCountry() {
     document.getElementById("selected_country_div").className = "hidden";
     document.getElementsByClassName("titleLine")[0].innerText =
       "Média de felicidade Mundial";
+      
+      document.getElementById("barChartTitle").innerText =
+        "Variação dos atributos durante os anos:  Média Mundial";
+
+        document.getElementById("titleLineClassification").innerText =
+          "Ranking dos países";
   }
   console.log("TEST")
 
@@ -840,41 +885,59 @@ function loadLoli() {
     .enter()
     .append("circle")
     .merge(u_loli)
+    .on("mouseover", d=>{
+      showCustomTooltip("Média de Felicidade:", d.Score, d3.event.pageX, d3.event.pageY)
+    })
+    .on("mouseout", d=>{
+      hideTooltip();
+    })
     .on("click", (d) => {
       if(d.Region == "Australia and New Zealand"){
         proj = "ANZ";
         centerOnAustraliaNZ();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 12;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       else if(d.Region == "North America"){
         proj = "Azimuthal_USA";
         centerOnUSA();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 8;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       else if(d.Region == "Western Europe" || d.Region == "Central and Eastern Europe"){
         proj = "Europe";
         centerOnEurope();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 10;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       else if(d.Region == "Eastern Asia" || d.Region == "Southeastern Asia" || d.Region == "South Asia" || d.Region == "Southern Asia"){
         proj = "Asia";
         centerOnAsia();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 11;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       else if(d.Region == "Sub-Saharan Africa" || d.Region == "Middle East and Northern Africa"){
         proj = "Africa";
         centerOnAfrica();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 7;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       else if(d.Region == "Latin America and Caribbean"){
         proj = "South_America";
         centerOnSouthAmerica();
         d3.selectAll("#map > svg > *").remove();
+        document.getElementById("proj").selectedIndex = 9;
+        document.getElementById("years").scrollIntoView({behavior: "smooth"});
         ready([]);
       }
       console.log(d)
@@ -889,7 +952,13 @@ function loadLoli() {
     })
     .attr("r", "7")
     .style("fill", "#69b3a2")
-    .attr("stroke", "black")
+    .attr("stroke", "black");
+
+    
+
+
+
+
 }
 
 function loadRankBar() {
@@ -974,10 +1043,17 @@ function loadRankBar() {
       selectedCountry = d;
       updateSelectedCountry();
     })
-    .attr("fill", "#69b3a2")
-    .append("title")
-    .text(function (d) {
-      return `Happiness Score: ${d.Happiness_Score}`;
+    .attr("fill", d=>{
+      if(selectedCountry && selectedCountry.Country == d.Country)
+        return "#4c51d4";
+      return "#69b3a2"
+    }
+      )
+    .on("mouseover", d=>{
+      showCustomTooltip("Índice de Felicidade:", d.Happiness_Score, d3.event.pageX, d3.event.pageY)
+    })
+    .on("mouseout", d=>{
+      hideTooltip();
     });
 
   svg_bar
@@ -1298,7 +1374,7 @@ function loadSpider() {
     draw: function (id, d, options) {
       var cfg = {
         radius: 5,
-        w: window.innerWidth*0.5,
+        w: window.innerWidth*0.4,
         h: 600,
         factor: 1,
         factorLegend: 0.85,
@@ -1578,7 +1654,7 @@ function loadSpider() {
               .style("left", d3.event.pageX - 80 + "px")
               .style("top", d3.event.pageY - 80 + "px")
               .style("display", "inline-block")
-              .html(d.area + "<br><span>" + d.value + "</span>");
+              .html(d.area + "<br><span>" + roundNumber(d.value) + "</span>");
           })
           .on("mouseout", function (d) {
             spider_tooltip.style("display", "none");

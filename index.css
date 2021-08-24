@@ -181,7 +181,6 @@
 .titleLine {
   /* Média de Felicidade Mundial */
 
-  width: 331px;
   height: 24px;
   left: 647px;
   top: 1190px;
@@ -198,7 +197,7 @@
 .line {
   /* Linechart */
 
-  width: 865px;
+  width: 50%;
   height: 446px;
   left: 536px;
   top: 1256px;
@@ -479,6 +478,10 @@ text {
   padding-top: 10%;
 }
 
+.marginTopper {
+  margin-top: 500px;
+}
+
 .row {
   display: flex;
 }
@@ -511,5 +514,25 @@ circle {
 }
 
 .dot{
+  cursor: pointer;
+}
+
+
+#bar_chart_1 .bar{
+  cursor: pointer;
+}
+#bar_chart_2 .bar{
+  cursor: pointer;
+}
+#bar_chart_3 .bar{
+  cursor: pointer;
+}
+#bar_chart_4 .bar{
+  cursor: pointer;
+}
+#bar_chart_5 .bar{
+  cursor: pointer;
+}
+#bar_chart_6 .bar{
   cursor: pointer;
 }

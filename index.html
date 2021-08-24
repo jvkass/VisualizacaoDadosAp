@@ -29,9 +29,9 @@
       <div class="column">
 
 
-        <text id="title" class="title">Bem vindos ao rank de felicidade</text>
-        <text id="subtitle" class="subtitle">A ideia do projeto é conceituar a realidade que os paises atualmente convivem junto com o indice de felicidade dos mesmos.</text>
-
+        <text id="title" class="title">World Happiness Report</text>
+        <text id="subtitle" class="subtitle">Explore os dados de felicidade dos países do mundo nos anos de 2015 a 2021
+        <br/><br/>Você pode filtrar por ano, categoria e ajustar a projeção do mapa:</text>
         <select name="years" id="years" class="inputAno">
           <option value="2015">2015</option>
           <option value="2016">2016</option>
@@ -45,7 +45,7 @@
           <option value="Happiness_Score">Happiness_Score</option>
           <option value="GDP_Per_Capita">GDP_Per_Capita</option>
           <option value="Social_Support">Social_Support</option>
-          <option value="Life_Expectancy">Life_Expectancy2018</option>
+          <option value="Life_Expectancy">Life_Expectancy</option>
           <option value="Freedom">Freedom</option>
           <option value="Generosity">Generosity</option>
           <option value="Government_Trust">Government_Trust</option>
@@ -83,6 +83,9 @@
         <div class="column">
 
           <h1 id="mapaTitle" class="mapaTitle">Mapa de Felicidade</h1>
+          <h5>O mapa de felicidade abaixo mostra a pontuação média de felicidade baseado nos atributos selecionáveis acima.
+            <br/><b>Passe o mouse</b> sobre um país para ver a pontuação.
+            <br/><b>Clique</b> em um país para ver detalhes sobre esse país nos gráficos. </h5>
           <div id="map" class="map"></div>
           <div id='selected_country_div' class='hidden'>
             <span class="paisSelecionado"><b>País Selecionado: </b></span>
@@ -97,8 +100,14 @@
 
       <div class="row">
         <div class="column">
-          <h4 class="titleSpider">Comparativo dos atributos</h4>
+          <h4 class="titleSpider" id="spiderChartTitle">Comparativo dos atributos</h4>
           <div id="chart" class="spider"></div>
+          
+          <p>O gráfico acima mostra como se dispõem os atributos de felicidade da média mundial.
+            Caso um país esteja selecionado, seus atributos também podem ser vistos.
+            <br/><b>Passe o mouse</b> sobre uma esfera para ver a pontuação da categoria.
+            <br/><b>Clique</b> em uma esfera para focar as visualizações nessa categoria.
+          </p>
         </div>
 
         <div class="column">
@@ -113,41 +122,36 @@
               </div>
             </div>
           </div>
+          <br/><br/>
+          <p><b>Clique</b> em uma esfera para focar as visualizações no ano especificado.
+          </p>
         </div>
-
-        <div class="column">
-
-        </div>
-
-      </div>
-
-      <div class="row">
-
-        <div class="column">
-
-        </div>
-        <div class="column">
-
-        </div>
-        <div class="column">
-          <h4>Example</h4>
-        </div>
-
-
       </div>
 
       <div class="row">
         <div class="column">
-          <h4 class="titleLolipop">Classificação por Região</h4>
+          <h4 class="titleLolipop">Média de Felicidade por Região</h4>
           <div id="my_dataviz" class="lolipop"></div>
+          <p>O gráfico acima mostra o ranking das regiões do mundo quanto a média da pontuação selecionada.
+            <br/><b>Passe o mouse</b> sobre uma esfera para ver a pontuação da categoria.
+            <br/><b>Clique</b> em uma esfera para focar o mapa na região desejada.
+          </p>
         </div>
         <div class="column">
-          <h4 class="titleLineClassification">Classificação dos 7 primeiros paises/ano</h4>
+          <h4 class="titleLineClassification">Variação de posição no ranking ao longo dos anos</h4>
           <div id="my_dataviz_para_line" class="lineClassification"></div>
+          <p>O gráfico acima mostra o histórico da classificação do ranking de felicidade mundial.
+            <br/><b>Passe o mouse</b> sobre uma linha para destacar o histórico do país.
+            <br/><b>Clique</b> em uma linha para focar a visualização nesse país.
+          </p>
         </div>
         <div class="column">
-          <h4 class="titleBarClassification">Classificação dos 7 primeiros paises</h4>
+          <h4 class="titleBarClassification" id="titleLineClassification">Ranking dos países no ano selecionado</h4>
           <div id="my_dataviz_bar" class="barClassification"></div>
+          <p><br/>O gráfico acima mostra parte do ranking mundial, focado no país selecionado.
+            <br/><b>Passe o mouse</b> sobre uma barra para ver o ídice de felicidade do país.
+            <br/><b>Clique</b> em uma barra para focar a visualização nesse país.
+          </p>
         </div>
 
       </div>
@@ -155,9 +159,12 @@
       <div class="row">
         <div class="column">
 
-          <h4 class="titleBarChart">
-            Variação dos atributos durante os anos: Média Global/País
+          <h4 class="titleBarChart" id="barChartTitle">
+            Variação dos atributos durante os anos:  Média Mundial
           </h4>
+          <p>O gráfico abaixo mostra a variação dos atributos ao longo do tempo.
+            <br/><b>Clique</b> em uma barra para focar a visualização nesse ano em específico.
+          </p>
         </div>
 
       </div>
