@@ -497,3 +497,19 @@ text {
 
   left: calc((100% - 1200px) / 2);
 }
+
+.lolipop circle{
+  cursor: pointer;
+}
+
+.lineClassification path{
+  cursor: pointer;
+}
+
+circle {
+  cursor: pointer;
+}
+
+.dot{
+  cursor: pointer;
+}

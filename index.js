@@ -70,6 +70,19 @@ function centerOnAustraliaNZ() {
   path = d3.geoPath().projection(projection);
 }
 
+function centerOnUSA() {
+  projection = d3.geoTwoPointAzimuthalUsa();
+  path = d3.geoPath().projection(projection);
+}
+
+function centerOnAfrica() {
+  projection = d3.geoChamberlinAfrica();
+  path = d3.geoPath().projection(projection);
+}
+
+
+
+
 const svg = d3
   .select("#map")
   .append("svg")
@@ -393,6 +406,50 @@ function ready([local_us, local_happiness_data, local_ids]) {
   loadBar();
   loadLoli();
   loadRankBar();
+
+  document.querySelectorAll('circle.dot')[0].addEventListener("click", ()=>{setYear(0)})
+  document.querySelectorAll('circle.dot')[1].addEventListener("click", ()=>{setYear(1)})
+  document.querySelectorAll('circle.dot')[2].addEventListener("click", ()=>{setYear(2)})
+  document.querySelectorAll('circle.dot')[3].addEventListener("click", ()=>{setYear(3)})
+  document.querySelectorAll('circle.dot')[4].addEventListener("click", ()=>{setYear(4)})
+  document.querySelectorAll('circle.dot')[5].addEventListener("click", ()=>{setYear(5)})
+  document.querySelectorAll('circle.dot')[6].addEventListener("click", ()=>{setYear(6)})
+}
+
+function setYear(y) {
+  document.getElementById("years").selectedIndex = y;
+  year = 2015+y;
+  ready([]);
+}
+
+function setCategory(sel_cat){
+  category = sel_cat;
+  if(sel_cat == "Freedom"){
+    document.getElementById("cat").selectedIndex = 4;
+  } 
+  else if(sel_cat == "Social_Support"){
+    document.getElementById("cat").selectedIndex = 2;
+  } 
+  else if(sel_cat == "Life_Expectancy"){
+    document.getElementById("cat").selectedIndex = 3;
+  } 
+  else if(sel_cat == "Government_Trust"){
+    document.getElementById("cat").selectedIndex = 6;
+  } 
+  else if(sel_cat == "Generosity"){
+    document.getElementById("cat").selectedIndex = 5;
+  } 
+  else if(sel_cat == "GDP_Per_Capita"){
+    document.getElementById("cat").selectedIndex = 1;
+  } 
+  try{
+    for(let i = 0; i < document.getElementsByClassName("spider_toolTip").length; i++){
+      // mate todos eles
+      document.getElementsByClassName("spider_toolTip")[i].style.display = 'none';
+    }
+  }
+  catch(e){}
+  ready([]);
 }
 
 function loadMap() {
@@ -783,6 +840,45 @@ function loadLoli() {
     .enter()
     .append("circle")
     .merge(u_loli)
+    .on("click", (d) => {
+      if(d.Region == "Australia and New Zealand"){
+        proj = "ANZ";
+        centerOnAustraliaNZ();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "North America"){
+        proj = "Azimuthal_USA";
+        centerOnUSA();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Western Europe" || d.Region == "Central and Eastern Europe"){
+        proj = "Europe";
+        centerOnEurope();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Eastern Asia" || d.Region == "Southeastern Asia" || d.Region == "South Asia" || d.Region == "Southern Asia"){
+        proj = "Asia";
+        centerOnAsia();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Sub-Saharan Africa" || d.Region == "Middle East and Northern Africa"){
+        proj = "Africa";
+        centerOnAfrica();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      else if(d.Region == "Latin America and Caribbean"){
+        proj = "South_America";
+        centerOnSouthAmerica();
+        d3.selectAll("#map > svg > *").remove();
+        ready([]);
+      }
+      console.log(d)
+    })
     .transition()
     .duration(1000)
     .attr("cx", function (d) {
@@ -793,7 +889,7 @@ function loadLoli() {
     })
     .attr("r", "7")
     .style("fill", "#69b3a2")
-    .attr("stroke", "black");
+    .attr("stroke", "black")
 }
 
 function loadRankBar() {
@@ -1067,7 +1163,8 @@ function loadParaLine() {
         });
     })
     .on("click", (d) => {
-      console.log(d);
+      selectedCountry = d;
+      updateSelectedCountry();
     });
   let test = -1;
   // Draw the axis:
@@ -1485,7 +1582,11 @@ function loadSpider() {
           })
           .on("mouseout", function (d) {
             spider_tooltip.style("display", "none");
-          });
+          })
+          .on("click", function (d) {
+            setCategory(d.area);
+            console.log(d);
+          });;
 
         series++;
       });
