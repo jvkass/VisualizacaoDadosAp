@@ -14,7 +14,6 @@
   <script src="https://unpkg.com/dc@4.0.5/dist/dc.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
-
   <link rel="stylesheet" href="index.css" />
 
 </head>
@@ -87,6 +86,9 @@
             <br/><b>Passe o mouse</b> sobre um país para ver a pontuação.
             <br/><b>Clique</b> em um país para ver detalhes sobre esse país nos gráficos. </h5>
           <div id="map" class="map"></div>
+          
+          <div id="teste2"></div>
+          
           <div id='selected_country_div' class='hidden'>
             <span class="paisSelecionado"><b>País Selecionado: </b></span>
             <span class="pais" id="selected_country"></span>
@@ -102,6 +104,8 @@
         <div class="column">
           <h4 class="titleSpider" id="spiderChartTitle">Comparativo dos atributos</h4>
           <div id="chart" class="spider"></div>
+          
+          <div id="teste"></div>
           
           <p>O gráfico acima mostra como se dispõem os atributos de felicidade da média mundial.
             Caso um país esteja selecionado, seus atributos também podem ser vistos.
@@ -208,11 +212,10 @@
       </div>
 
 
-
   </main>
 
-  <script src='index.js' />
-
+  <script type="module" src='index.js' ></script>
+  
   <!-- Bootstrap javascript files -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

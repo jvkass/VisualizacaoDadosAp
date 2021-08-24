@@ -1,3 +1,6 @@
+import {Runtime} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+import d3_colorLegend from "https://api.observablehq.com/@d3/color-legend.js?v=3";
+
 const width = 960;
 const height = 600;
 
@@ -49,6 +52,19 @@ let barChart3;
 let barChart4;
 let barChart5;
 let barChart6;
+
+var colorScale;
+var series;
+var dataValues;
+var dimensions;
+var x;
+var regions;
+var filtered_data;
+var regions_data;
+var selectedIndex;
+
+var color_map_domain;
+var spider_map_domain = ['Média Mundial'];
 
 function roundNumber(num){
   return Math.floor(Number(num)*100)/100
@@ -411,6 +427,8 @@ function ready([local_us, local_happiness_data, local_ids]) {
   loadBar();
   loadLoli();
   loadRankBar();
+  buildSwatch();
+  buildLegends();
 
   if(selectedCountry && selectedCountry.Country)
     document.getElementById("titleLineClassification").innerText = "Ranking dos países em "+year+" focado em: " + selectedCountry.Country;
@@ -502,6 +520,11 @@ function loadMap() {
       ranges[category][1] + ranges[category][1] / 10,
     ])
     .range(d3.schemeRdYlBu[7]);
+
+  color_map_domain = [
+    ranges[category][0] - ranges[category][0] / 10,
+    ranges[category][1] + ranges[category][1] / 10,
+  ]
 
   svg.attr("fill", "gray").attr("background-color", "gray");
 
@@ -646,7 +669,7 @@ function updateSelectedCountry() {
 
         
 
-      
+    spider_map_domain = ['Média mundial', selectedCountry.Country]  
 
     for (let i = 0; i < happiness_data.length; i++) {
       if (happiness_data[i].Country == selectedCountry.Country) {
@@ -663,6 +686,8 @@ function updateSelectedCountry() {
 
         document.getElementById("titleLineClassification").innerText =
           "Ranking dos países";
+          
+    spider_map_domain = ['Média mundial']  
   }
   console.log("TEST")
 
@@ -1163,7 +1188,7 @@ function loadParaLine() {
 
   // For each dimension, I build a linear scale. I store all in a y object
   var y = {};
-  for (i in dimensions) {
+  for (let i in dimensions) {
     name = dimensions[i];
     if (name == "Pais") {
       y[name] = d3
@@ -1584,7 +1609,7 @@ function loadSpider() {
           })
           .style("fill-opacity", cfg.opacityArea)
           .on("mouseover", function (d) {
-            z = "polygon." + d3.select(this).attr("class");
+            let z = "polygon." + d3.select(this).attr("class");
             g.selectAll("polygon").transition(200).style("fill-opacity", 0.1);
             g.selectAll(z).transition(200).style("fill-opacity", 0.7);
           })
@@ -1670,4 +1695,53 @@ function loadSpider() {
   };
 
   RadarChart.draw("#chart", custom_data, spider_config);
+}
+
+function buildSwatch(){
+  // Example chart data copied from https://observablehq.com/@d3/stacked-area-chart
+  const color = d3.scaleOrdinal()
+      .domain(spider_map_domain)
+      .range(['rgb(111, 37, 127)','rgb(202, 13, 89)'])
+  const margin = ({top: 20, right: 30, bottom: 30, left: 40})
+
+  // Container element into which the swatches will render
+  const container = document.getElementById("teste")
+
+  renderSwatches(container)
+    
+  async function renderSwatches(el) {
+    const module = new Runtime().module(d3_colorLegend);
+    const swatches = await module.value("swatches");
+    
+    const element = swatches({color, marginLeft: margin.left, columns: "180px"});
+
+    el.innerHTML = ""
+    el.appendChild(element);
+  }
+}
+
+function buildLegends(){
+  // Example chart data copied from https://observablehq.com/@d3/stacked-area-chart
+  const color = d3.scaleQuantize()
+      .domain(color_map_domain)
+      .range(d3.schemeRdYlBu[7])
+  
+  const margin = ({top: 20, right: 30, bottom: 30, left: 40})
+
+  // Container element into which the swatches will render
+  const container = document.getElementById("teste2")
+
+  renderSwatches(container)
+    
+  async function renderSwatches(el) {
+    const module = new Runtime().module(d3_colorLegend);
+    const legend = await module.value("legend");
+    
+    //const element = legend({color, marginLeft: margin.left, columns: "180px"});
+    const element = legend({
+      color: d3.scaleSequential(color_map_domain, d3.interpolateRdYlBu),
+    })
+    el.innerHTML = ""
+    el.appendChild(element);
+  }
 }
